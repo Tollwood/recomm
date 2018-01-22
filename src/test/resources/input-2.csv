@@ -1,0 +1,5 @@
+"CUSTOMER_NUMBER","RECOMMENDATION_ACTIVE","REC1","REC2","REC3","REC4","REC5","REC6","REC7","REC8","REC9","REC10"
+"111111"         ,"false"                ,"B"   ,"R"   ,"I"   ,"L"   ,"L"   ,"I"   ,"A"   ,"N"   ,"T"   ,"S"
+"111112"         ,"true"                 ,"A"   ,"B"   ,"C"   ,"D"   ,"E"   ,"F"   ,"G"   ,"H"   ,"I"   ,"J"
+"111113"         ,"true"                 ,"J"   ,"I"   ,"H"   ,"S"   ,"A"   ,"F"   ,"X"   ,"Y"   ,"R"   ,"M"
+"111114"         ,"false"                ,"I"   ,"T"   ,"W"   ,"O"   ,"R"   ,"K"   ,"S"   ,"O"   ,"K"   ,"!"

@@ -1,40 +1,33 @@
 package com.tollwood.model;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
+@EqualsAndHashCode
+@ToString
+@Getter
 public class Recommendation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    @Column(unique = true)
-    private String customerNumber;
-    private boolean recommendationActive;
+    private final String customerNumber;
+    private final boolean recommendationActive;
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "product_recommendations", joinColumns = @JoinColumn(name = "id"))
     @Column(name = "productRecommendations")
-    private Set<String> productRecommendations;
+    private final Set<String> productRecommendations;
 
     protected Recommendation() {
+        this(null, false, null);
     }
 
     public Recommendation(String customerNumber, boolean recommendationActive, Set<String> productRecommendations) {
         this.customerNumber = customerNumber;
         this.recommendationActive = recommendationActive;
         this.productRecommendations = productRecommendations;
-    }
-
-    public String getCustomerNumber() {
-        return customerNumber;
-    }
-
-    public boolean isRecommendationActive() {
-        return recommendationActive;
-    }
-
-    public Set<String> getProductRecommendations() {
-        return productRecommendations;
     }
 }

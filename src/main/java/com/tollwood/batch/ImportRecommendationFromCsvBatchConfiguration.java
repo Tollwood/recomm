@@ -7,6 +7,7 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
@@ -14,16 +15,17 @@ import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 
 @Configuration
 @EnableBatchProcessing
-public class ImportRecommendationJobFactory {
+public class ImportRecommendationFromCsvBatchConfiguration {
 
     private JobBuilderFactory jobBuilderFactory;
     private StepBuilderFactory stepBuilderFactory;
@@ -32,45 +34,36 @@ public class ImportRecommendationJobFactory {
     private EntityManagerFactory emf;
 
     @Autowired
-    public ImportRecommendationJobFactory(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory) {
+    public ImportRecommendationFromCsvBatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
     }
 
-    @Bean
-    public RecommendationImportItemProcessor processor() {
-        return new RecommendationImportItemProcessor();
-    }
-
-    @Bean
-    public JpaItemWriter<Recommendation> writer() {
-        // TODO verify several submits
-        JpaItemWriter<Recommendation> writer = new JpaItemWriter<>();
-        writer.setEntityManagerFactory(emf);
-        return writer;
-    }
-
-    // TODO verify if its ok to create a new job for each import request
-    public Job createJob(byte[] bytes) {
+    @Bean(name = "importRecommendationJob")
+    public Job importRecommendationJob() {
         return jobBuilderFactory.get("importRecommendationJob")
                 .incrementer(new RunIdIncrementer())
-                .flow(importRecommendation(bytes))
+                .flow(importRecommendation())
                 .end()
                 .build();
     }
 
-    private Step importRecommendation(byte[] bytes) {
+    @Bean
+    public Step importRecommendation() {
         return stepBuilderFactory.get("importRecommendation")
                 .<CsvInput, Recommendation>chunk(10)
-                .reader(reader(bytes))
+                .reader(reader(null))
                 .processor(processor())
                 .writer(writer())
                 .build();
     }
 
-    private FlatFileItemReader<CsvInput> reader(byte[] bytes) {
+    @Bean
+    @StepScope
+    public FlatFileItemReader<CsvInput> reader(@Value("#{jobParameters[pathToFile]}") String pathToFile) {
+
         FlatFileItemReader<CsvInput> reader = new FlatFileItemReader<>();
-        reader.setResource(new ByteArrayResource(bytes));
+        reader.setResource(new FileSystemResource(pathToFile));
         reader.setLinesToSkip(1);
         reader.setLineMapper(new DefaultLineMapper<CsvInput>() {{
             setLineTokenizer(new DelimitedLineTokenizer() {{
@@ -81,5 +74,17 @@ public class ImportRecommendationJobFactory {
             }});
         }});
         return reader;
+    }
+
+    @Bean
+    public RecommendationImportItemProcessor processor() {
+        return new RecommendationImportItemProcessor();
+    }
+
+    @Bean
+    public JpaItemWriter<Recommendation> writer() {
+        JpaItemWriter<Recommendation> writer = new JpaItemWriter<>();
+        writer.setEntityManagerFactory(emf);
+        return writer;
     }
 }
