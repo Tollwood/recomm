@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -96,10 +97,11 @@ public class FileUploadTest {
         List<Recommendation> list = new ArrayList<>();
         allRecommendationsAfterSecondFile.forEach(list::add);
         assertEquals(4, list.size());
-        assertEquals(recommendation1, list.get(0));
-        assertEquals(recommendation2, list.get(1));
-        assertEquals(recommendation3, list.get(2));
-        assertEquals(recommendation4, list.get(3));
+        assertTrue(list.contains(recommendation1));
+        assertTrue(list.contains(recommendation2));
+        assertTrue(list.contains(recommendation3));
+        assertTrue(list.contains(recommendation4));
+
     }
 
     private void uploadFile(final String originalFilename) throws Exception {
