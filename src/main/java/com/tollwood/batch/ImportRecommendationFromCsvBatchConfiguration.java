@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 
 import javax.persistence.EntityManagerFactory;
@@ -40,19 +41,19 @@ public class ImportRecommendationFromCsvBatchConfiguration {
     }
 
     @Bean(name = "importRecommendationJob")
-    public Job importRecommendationJob() {
+    public Job importRecommendationJob(Step step) {
         return jobBuilderFactory.get("importRecommendationJob")
                 .incrementer(new RunIdIncrementer())
-                .flow(importRecommendation())
+                .flow(step)
                 .end()
                 .build();
     }
 
     @Bean
-    public Step importRecommendation() {
+    public Step importRecommendation(FlatFileItemReader<CsvInput> reader) {
         return stepBuilderFactory.get("importRecommendation")
                 .<CsvInput, Recommendation>chunk(10)
-                .reader(reader(null))
+                .reader(reader)
                 .processor(processor())
                 .writer(writer())
                 .build();
@@ -63,7 +64,12 @@ public class ImportRecommendationFromCsvBatchConfiguration {
     public FlatFileItemReader<CsvInput> reader(@Value("#{jobParameters[pathToFile]}") String pathToFile) {
 
         FlatFileItemReader<CsvInput> reader = new FlatFileItemReader<>();
-        reader.setResource(new FileSystemResource(pathToFile));
+        // desparate on this one.... exception on startup as pathToFile is not defined when loading the configuration
+        if (pathToFile != null) {
+            reader.setResource(new FileSystemResource(pathToFile));
+        } else {
+            reader.setResource(new ByteArrayResource("".getBytes()));
+        }
         reader.setLinesToSkip(1);
         reader.setStrict(false);
         reader.setLineMapper(new DefaultLineMapper<CsvInput>() {{
