@@ -1,6 +1,6 @@
 ![build status](https://travis-ci.org/Tollwood/recomm.svg?branch=master)
 
-#Recommendation Microservice
+# Recommendation Microservice
 This service offers product/game recommendations for a given user.
 
 # Api Description
