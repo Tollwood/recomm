@@ -65,6 +65,7 @@ public class ImportRecommendationFromCsvBatchConfiguration {
         FlatFileItemReader<CsvInput> reader = new FlatFileItemReader<>();
         reader.setResource(new FileSystemResource(pathToFile));
         reader.setLinesToSkip(1);
+        reader.setStrict(false);
         reader.setLineMapper(new DefaultLineMapper<CsvInput>() {{
             setLineTokenizer(new DelimitedLineTokenizer() {{
                 setNames(new String[]{"customerNumber", "recommendationActive", "rec1", "rec2", "rec3", "rec4", "rec5", "rec6", "rec7", "rec8", "rec9", "rec10"});

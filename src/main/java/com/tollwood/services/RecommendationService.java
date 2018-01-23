@@ -36,7 +36,7 @@ public class RecommendationService {
     public Iterable<String> getRecommendations(String customerNumber, int count) {
         final Recommendation recommendation = recommendationRepository.findByCustomerNumber(customerNumber);
         if (recommendation == null || !recommendation.isRecommendationActive()) {
-            throw new NoRecommendationFoundException();
+            throw new NoRecommendationFoundException(customerNumber);
         }
         return recommendation.getProductRecommendations().stream()
                 .limit(count)
@@ -51,7 +51,7 @@ public class RecommendationService {
                     .toJobParameters();
             jobLauncher.run(importRecommendationJob, jobParameters);
         } catch (Exception e) {
-            throw new ImportFailedException();
+            throw new ImportFailedException(e.getMessage());
         }
     }
 

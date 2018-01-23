@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
+@AutoConfigureTestDatabase
 public class FileUploadTest {
 
 
@@ -43,7 +45,7 @@ public class FileUploadTest {
     }
 
     // @Test
-    // TODO Transactions for tests are not rolled back
+    // TODO Make each test run in a transaction
     public void shouldImportUploadedFile() throws Exception {
         // given
         final Set<String> recommendetProducts1 = new HashSet<>(Arrays.asList("bingo", "cashwheel", "cashbuster", "brilliant", "citytrio", "crossword", "sevenwins", "sudoku", "sofortlotto", "hattrick"));

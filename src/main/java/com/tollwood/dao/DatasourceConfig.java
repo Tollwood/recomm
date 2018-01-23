@@ -12,7 +12,11 @@ import java.net.URISyntaxException;
 public class DatasourceConfig {
     @Bean(name = "postgresDataSource")
     public DataSource dataSource() throws URISyntaxException {
-        URI dbUri = new URI(System.getenv("DATABASE_URL"));
+        String dataBaseUrl = System.getenv("DATABASE_URL");
+        if (dataBaseUrl == null) {
+            throw new MissingDatabaseUrlException();
+        }
+        URI dbUri = new URI(dataBaseUrl);
 
         String username = dbUri.getUserInfo().split(":")[0];
         String password = dbUri.getUserInfo().split(":")[1];
@@ -23,7 +27,6 @@ public class DatasourceConfig {
         basicDataSource.setUsername(username);
         basicDataSource.setPassword(password);
         basicDataSource.setConnectionProperties("sslmode=require");
-
 
         return basicDataSource;
     }
