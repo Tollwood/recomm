@@ -46,10 +46,10 @@ This service offers product/game recommendations for a given user.
   * `mvn install dockerfile:build`
   * `docker run -p 8080:8080 -t -e DATABASE_URL=postgres://{USERNAME}:{PASSWORD}@{HOST} tollwood/tollwood-recomm`
 
-#Live Demo
+# Live Demo
 The Service is hosted on heroku: [link_with_recommendations](https://tollwood-recomm.herokuapp.com/customers/111112/games/recommendations?count=5)
 Follow the screenshots below to see how to configure postman
 
-#Screenshots
+# Screenshots
 ![alt text](screenshots/upload-csv.png "file upload using postman")
 ![alt text](screenshots/getRecommendations.png "get recommondations using postman")
